@@ -51,6 +51,15 @@ public class TodoController {
                             )
                     ).collect(Collectors.toList());
                 }
+
+                if(tasksRequest.getTaskPriority() != null) {
+                    tasksList = tasksList.stream().filter(
+                            task ->
+                                    tasksRequest.getTaskPriority().equals(
+                                            task.getPriority()
+                                    )
+                    ).collect(Collectors.toList());
+                }
             }
 
             if ((10 * tasksRequest.getPage()) - tasksList.size() < 10) {

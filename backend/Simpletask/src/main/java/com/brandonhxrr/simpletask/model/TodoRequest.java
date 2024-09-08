@@ -10,5 +10,5 @@ public class TodoRequest {
     String sortBy = "";
     String taskStatus = "";
     String taskName = "";
-    String taskPriority = "";
+    Priority taskPriority = null;
 }
