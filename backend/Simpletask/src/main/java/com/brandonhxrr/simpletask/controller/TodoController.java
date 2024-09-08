@@ -94,9 +94,7 @@ public class TodoController {
     @PostMapping("/todos/")
     public ResponseEntity<Todo> addTask(@RequestBody Todo task) {
 
-        if(task.getText().isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else if(task.getPriority() == null) {
+        if(task.getText().isEmpty() || task.getPriority() == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -115,14 +113,25 @@ public class TodoController {
 
         if (oldTaskData.isPresent()) {
             Todo updatedTask = oldTaskData.get();
+
+            LocalDateTime now = LocalDateTime.now();
+
+            if (updatedTask.getDone() != newTaskData.getDone()) {
+                if(newTaskData.getDone()){
+                    updatedTask.setDoneDate(now);
+                }else{
+                    updatedTask.setDoneDate(null);
+                }
+            }
+
             updatedTask.setText(newTaskData.getText());
             updatedTask.setDone(newTaskData.getDone());
             updatedTask.setPriority(newTaskData.getPriority());
             updatedTask.setDueDate(newTaskData.getDueDate());
-            updatedTask.setLastUpdateDate(newTaskData.getLastUpdateDate());
+            updatedTask.setLastUpdateDate(now);
 
-            if (updatedTask.getDone() != newTaskData.getDone() && updatedTask.getDone()) {
-                updatedTask.setDoneDate(newTaskData.getDoneDate());
+            if(updatedTask.getText().isEmpty() || updatedTask.getPriority() == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             todoRepository.save(updatedTask);
