@@ -144,19 +144,59 @@ public class TodoController {
     }
 
     @PostMapping("/todos/{id}/done/")
-    public void markAsDone(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> markAsDone(@PathVariable Long id) {
+        Optional<Todo> taskData = todoRepository.findById(id);
 
+        if (taskData.isPresent()) {
+            Todo updatedTask = taskData.get();
+
+            LocalDateTime now = LocalDateTime.now();
+
+            if(!updatedTask.getDone()){
+                updatedTask.setDone(true);
+                updatedTask.setDoneDate(now);
+                updatedTask.setLastUpdateDate(now);
+                todoRepository.save(updatedTask);
+            }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/todos/{id}/undone/")
-    public void markAsUndone(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> markAsUndone(@PathVariable Long id) {
+        Optional<Todo> taskData = todoRepository.findById(id);
 
+        if (taskData.isPresent()) {
+            Todo updatedTask = taskData.get();
+
+            LocalDateTime now = LocalDateTime.now();
+
+            if(updatedTask.getDone()){
+                updatedTask.setDone(false);
+                updatedTask.setDoneDate(null);
+                updatedTask.setLastUpdateDate(now);
+                todoRepository.save(updatedTask);
+            }
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("todos/{id}/delete/")
     public ResponseEntity<HttpStatus> deleteTask(@PathVariable Long id) {
-        todoRepository.deleteById(id);
+        Optional<Todo> taskData = todoRepository.findById(id);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        if(taskData.isPresent()) {
+            todoRepository.deleteById(id);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
