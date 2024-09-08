@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -92,6 +93,17 @@ public class TodoController {
 
     @PostMapping("/todos/")
     public ResponseEntity<Todo> addTask(@RequestBody Todo task) {
+
+        if(task.getText().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }else if(task.getPriority() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        task.setCreationDate(now);
+        task.setLastUpdateDate(now);
+
         Todo createdTask = todoRepository.save(task);
 
         return new ResponseEntity<>(createdTask, HttpStatus.OK);
