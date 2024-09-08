@@ -1,11 +1,17 @@
 package com.brandonhxrr.simpletask.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Entity
@@ -25,18 +31,30 @@ public class Todo {
     @NotNull
     private String text;
 
-    private LocalDate dueDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm")
+    private LocalDateTime dueDate;
 
     @Builder.Default
     private Boolean done = false;
 
-    private LocalDate doneDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm")
+    private LocalDateTime doneDate;
 
     @NotNull
     private String priority;
 
-    private LocalDate creationDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm")
+    private LocalDateTime creationDate;
 
-    private LocalDate lastUpdateDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm")
+    private LocalDateTime lastUpdateDate;
 
 }
