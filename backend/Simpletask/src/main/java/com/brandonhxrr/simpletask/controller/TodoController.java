@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class TodoController {
@@ -34,6 +35,11 @@ public class TodoController {
                             tasksList.sort(new TaskPriorityComparator().thenComparing(Todo::getDueDate));
                     case "priority&dueDateAsc" ->
                             tasksList.sort(new TaskPriorityComparator().reversed().thenComparing(Todo::getDueDate));
+                }
+
+                switch (tasksRequest.getTaskStatus()) {
+                    case "done" -> tasksList = tasksList.stream().filter(Todo::getDone).collect(Collectors.toList());
+                    case "notDone" -> tasksList = tasksList.stream().filter(task -> !task.getDone()).collect(Collectors.toList());
                 }
             }
 
