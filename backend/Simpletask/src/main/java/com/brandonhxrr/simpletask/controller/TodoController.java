@@ -1,14 +1,15 @@
 package com.brandonhxrr.simpletask.controller;
 
+import com.brandonhxrr.simpletask.model.TaskPriorityComparator;
 import com.brandonhxrr.simpletask.model.Todo;
+import com.brandonhxrr.simpletask.model.TodoRequest;
 import com.brandonhxrr.simpletask.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @RestController
 public class TodoController {
@@ -17,15 +18,34 @@ public class TodoController {
     private TodoRepository todoRepository;
 
     @GetMapping("/todos/")
-    public ResponseEntity<List<Todo>> getAllTasks() {
+    public ResponseEntity<List<Todo>> getAllTasks(@RequestBody TodoRequest tasksRequest) {
         try {
             List<Todo> tasksList = new ArrayList<>(todoRepository.findAll());
 
             if(tasksList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }else {
+                switch (tasksRequest.getSortBy()) {
+                    case "priority" -> tasksList.sort(new TaskPriorityComparator());
+                    case "priorityAsc" -> tasksList.sort(new TaskPriorityComparator().reversed());
+                    case "dueDate" -> tasksList.sort(Comparator.comparing(Todo::getDueDate));
+                    case "dueDateAsc" -> tasksList.sort(Comparator.comparing(Todo::getDueDate).reversed());
+                    case "priority&dueDate" ->
+                            tasksList.sort(new TaskPriorityComparator().thenComparing(Todo::getDueDate));
+                    case "priority&dueDateAsc" ->
+                            tasksList.sort(new TaskPriorityComparator().reversed().thenComparing(Todo::getDueDate));
+                }
             }
 
-            return new ResponseEntity<>(tasksList, HttpStatus.OK);
+            if((10 * tasksRequest.getPage()) - tasksList.size() < 10){
+                int startIndex = (tasksRequest.getPage() - 1) * 10;
+                int endIndex = startIndex + 10;
+                List<Todo> paginatedTaskList = tasksList.subList(startIndex, Math.min(endIndex, tasksList.size()));
+                return new ResponseEntity<>(paginatedTaskList, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
