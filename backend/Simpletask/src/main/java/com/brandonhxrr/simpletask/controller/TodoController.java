@@ -23,9 +23,9 @@ public class TodoController {
         try {
             List<Todo> tasksList = new ArrayList<>(todoRepository.findAll());
 
-            if(tasksList.isEmpty()) {
+            if (tasksList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }else {
+            } else {
                 switch (tasksRequest.getSortBy()) {
                     case "priority" -> tasksList.sort(new TaskPriorityComparator());
                     case "priorityAsc" -> tasksList.sort(new TaskPriorityComparator().reversed());
@@ -39,11 +39,21 @@ public class TodoController {
 
                 switch (tasksRequest.getTaskStatus()) {
                     case "done" -> tasksList = tasksList.stream().filter(Todo::getDone).collect(Collectors.toList());
-                    case "notDone" -> tasksList = tasksList.stream().filter(task -> !task.getDone()).collect(Collectors.toList());
+                    case "notDone" ->
+                            tasksList = tasksList.stream().filter(task -> !task.getDone()).collect(Collectors.toList());
+                }
+
+                if (!tasksRequest.getTaskName().isEmpty()) {
+                    tasksList = tasksList.stream().filter(
+                            task ->
+                                    task.getText().toLowerCase().contains(
+                                        tasksRequest.getTaskName().toLowerCase()
+                            )
+                    ).collect(Collectors.toList());
                 }
             }
 
-            if((10 * tasksRequest.getPage()) - tasksList.size() < 10){
+            if ((10 * tasksRequest.getPage()) - tasksList.size() < 10) {
                 int startIndex = (tasksRequest.getPage() - 1) * 10;
                 int endIndex = startIndex + 10;
                 List<Todo> paginatedTaskList = tasksList.subList(startIndex, Math.min(endIndex, tasksList.size()));
@@ -63,7 +73,7 @@ public class TodoController {
 
         Optional<Todo> task = todoRepository.findById(id);
 
-        if(task.isPresent()) {
+        if (task.isPresent()) {
             return new ResponseEntity<>(task.get(), HttpStatus.OK);
         }
 
@@ -82,7 +92,7 @@ public class TodoController {
     public ResponseEntity<Todo> updateTask(@PathVariable Long id, @RequestBody Todo newTaskData) {
         Optional<Todo> oldTaskData = todoRepository.findById(id);
 
-        if(oldTaskData.isPresent()) {
+        if (oldTaskData.isPresent()) {
             Todo updatedTask = oldTaskData.get();
             updatedTask.setText(newTaskData.getText());
             updatedTask.setDone(newTaskData.getDone());
@@ -90,7 +100,7 @@ public class TodoController {
             updatedTask.setDueDate(newTaskData.getDueDate());
             updatedTask.setLastUpdateDate(newTaskData.getLastUpdateDate());
 
-            if(updatedTask.getDone() != newTaskData.getDone() && updatedTask.getDone()) {
+            if (updatedTask.getDone() != newTaskData.getDone() && updatedTask.getDone()) {
                 updatedTask.setDoneDate(newTaskData.getDoneDate());
             }
 
