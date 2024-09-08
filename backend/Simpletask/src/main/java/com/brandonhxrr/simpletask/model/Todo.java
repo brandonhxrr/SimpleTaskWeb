@@ -9,8 +9,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -45,7 +43,7 @@ public class Todo {
     private LocalDateTime doneDate;
 
     @NotNull
-    private String priority;
+    private Priority priority;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
