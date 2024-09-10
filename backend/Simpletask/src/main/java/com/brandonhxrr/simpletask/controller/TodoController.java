@@ -88,7 +88,6 @@ public class TodoController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
     }
 
     @PostMapping("/todos/")

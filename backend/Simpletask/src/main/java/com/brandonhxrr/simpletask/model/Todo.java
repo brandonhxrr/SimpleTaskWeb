@@ -12,8 +12,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Builder
-@Entity
-@Table(name="todo")
+//@Entity
+//@Table(name="todo")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @ToString
 public class Todo {
 
-    @Id
+    //@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
