@@ -3,6 +3,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import { BellAlertIcon } from "@heroicons/react/24/outline";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { TableHeader } from "./TableHeader";
 import { TaskProps } from "./TaskProps";
 import { Pagination } from "./Pagination";
@@ -20,8 +21,6 @@ const doneOptions = [
   { name: "Done", href: "#", current: false },
   { name: "Not done", href: "#", current: false },
 ];
-
-export default function Example() {}
 
 const headers = [
   { Icon: CheckCircleIcon, title: "Done" },
@@ -204,7 +203,6 @@ const tasks: TaskProps[] = [
 ];
 
 function Dashboard() {
-
   return (
     <div className="w-full h-full flex flex-col text-left bg-slate-200 rounded-xl p-20 mt-10">
       <div className="flex items-baseline justify-between border-b border-gray-200 pb-16">
@@ -213,8 +211,16 @@ function Dashboard() {
         </h1>
 
         <div className="flex items-center">
-          <Filter options={doneOptions} title="Done status"/>
-          <Filter options={priorityOptions} title="Priority"/>
+          <Filter options={doneOptions} title="Done status" />
+          <Filter options={priorityOptions} title="Priority" />
+
+          <button
+            type="button"
+            className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 justify-center font-medium rounded-lg text-sm ml-5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            <PlusIcon className="h-4 w-4 mr-2" />
+            Add task
+          </button>
         </div>
       </div>
 
