@@ -6,10 +6,26 @@ import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { TableHeader } from "./TableHeader";
 import { TaskProps } from "./TaskProps";
 import { Pagination } from "./Pagination";
+import { Filter } from "./Filter";
+
+const priorityOptions = [
+  { name: "None", href: "#", current: true },
+  { name: "High", href: "#", current: false },
+  { name: "Medium", href: "#", current: false },
+  { name: "Low", href: "#", current: false },
+];
+
+const doneOptions = [
+  { name: "None", href: "#", current: true },
+  { name: "Done", href: "#", current: false },
+  { name: "Not done", href: "#", current: false },
+];
+
+export default function Example() {}
 
 const headers = [
-  { Icon: CheckCircleIcon, title: "Done"},
-  { Icon: Bars3Icon, title: "Name"},
+  { Icon: CheckCircleIcon, title: "Done" },
+  { Icon: Bars3Icon, title: "Name" },
   { Icon: BellAlertIcon, title: "Priority", sorteable: true },
   { Icon: CalendarDaysIcon, title: "Due date", sorteable: true },
 ];
@@ -188,9 +204,19 @@ const tasks: TaskProps[] = [
 ];
 
 function Dashboard() {
+
   return (
     <div className="w-full h-full flex flex-col text-left bg-slate-200 rounded-xl p-20 mt-10">
-      <h2 className="text-xl text-black font-black mb-10">To-Do's</h2>
+      <div className="flex items-baseline justify-between border-b border-gray-200 pb-16">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+          To-Do's
+        </h1>
+
+        <div className="flex items-center">
+          <Filter options={doneOptions} title="Done status"/>
+          <Filter options={priorityOptions} title="Priority"/>
+        </div>
+      </div>
 
       <div className="relative overflow-x-auto rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -214,7 +240,7 @@ function Dashboard() {
         </table>
       </div>
 
-      <Pagination currentPage={1} totalPages={Math.ceil(tasks.length / 10)}/>
+      <Pagination currentPage={1} totalTasks={tasks.length} />
     </div>
   );
 }
