@@ -1,8 +1,9 @@
 interface PageProps {
   currentPage: number;
   totalTasks: number;
+  onPageChanged: (page: number) => void;
 }
-const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks }) => {
+const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks, onPageChanged }) => {
   const maxPages = 5;
   const totalPages = Math.ceil(totalTasks / 10);
 
@@ -56,6 +57,8 @@ const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks }) => {
             type="button"
             className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:border-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
             aria-label="Previous"
+            onClick={() => onPageChanged(currentPage - 1)}
+            disabled={currentPage === 1}
           >
             <svg
               className="shrink-0 size-3.5"
@@ -80,9 +83,10 @@ const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks }) => {
               <button
                 key={page}
                 type="button"
+                onClick={() => onPageChanged(page)}
                 className={
                   `${currentPage === page ? "bg-blue-500 text-white" : ""}` + " " +
-                  " min-h-[38px] min-w-[38px] flex justify-center items-center border border-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-white dark:focus:bg-white/10"
+                  " min-h-[38px] min-w-[38px] flex justify-center items-center border border-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:text-white "
                 }
                 aria-current="page"
               >
@@ -93,6 +97,8 @@ const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks }) => {
           <button
             type="button"
             className="min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-2 text-sm rounded-lg border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:border-transparent dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10"
+            onClick={() => onPageChanged(currentPage + 1)}
+            disabled={currentPage === totalPages}
           >
             <span aria-hidden="true" className="hidden sm:block">
               Next

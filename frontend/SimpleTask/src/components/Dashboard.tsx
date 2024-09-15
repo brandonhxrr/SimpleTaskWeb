@@ -8,8 +8,9 @@ import { TableHeader } from "./TableHeader";
 import { TaskProps } from "./TaskProps";
 import { Pagination } from "./Pagination";
 import { Filter } from "./Filter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TaskModal } from "./TaskModal";
+import { TodoRequest } from "./TodoRequest";
 
 const priorityOptions = [
   { name: "None", href: "#", current: true },
@@ -31,196 +32,93 @@ const headers = [
   { Icon: CalendarDaysIcon, title: "Due date", sorteable: true },
 ];
 
-const tasks: TaskProps[] = [
-  {
-    id: 1,
-    name: "Lavar ropa",
-    done: false,
-    dueDate: "2024-11-27T06:00",
-    priority: "HIGH",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 2,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "MEDIUM",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-  {
-    id: 3,
-    name: "Lavar ropa",
-    done: true,
-    dueDate: "2024-11-27T06:00",
-    priority: "LOW",
-    doneDate: "",
-    creationDate: "11/09/2024",
-    lastUpdatedDate: "11/09/2024",
-  },
-];
-
 function Dashboard() {
+  const [tasks, setTasks] = useState<TaskProps[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<TaskProps | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalTasks, setTotalTasks] = useState(0);
+  const [filterByTaskName, setFilterByTaskName] = useState("");
+  const [filterByTaskPriority, setFilterByTaskPriority] = useState("");
+  const [filterByTaskStatus, setFilterByTaskStatus] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [todoRequest, setRequest] = useState<TodoRequest>({
+    page: 1,
+    taskName: "",
+    taskPriority: "",
+    taskStatus: "",
+    sortBy: "",
+  });
+
+  const updateRequest = () => {
+    setRequest({
+      page: currentPage,
+      taskName: filterByTaskName,
+      taskPriority: filterByTaskPriority,
+      taskStatus: filterByTaskStatus,
+      sortBy: sortBy,
+    });
+  };
 
   const openEditTaskModal = (task: TaskProps) => {
     setIsModalOpen(true);
     setCurrentTask(task);
-  }
+  };
 
   const openAddTaskModal = () => {
     setCurrentTask(null);
     setIsModalOpen(true);
-  }
+  };
 
   const closeModal = () => {
-    console.log("MODALLL")
     setIsModalOpen(false);
+  };
+
+  const fetchTasks = async () => {
+    const url = new URL("http://localhost:9090/todos/");
+    const searchParams = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(todoRequest)) {
+      if (value) {
+        searchParams.append(key, value);
+      }
+    }
+
+    url.search = searchParams.toString();
+    try {
+      const response = await fetch(url.toString(), { method: "GET" });
+      console.log(url);
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+      setTasks(data.tasks);
+      setTotalTasks(data.totalTasks);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error while loading tasks", error);
+      setLoading(false);
+    }
+  };
+
+  const onPageChanged = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [todoRequest]);
+
+  useEffect(() => {
+    console.log(currentPage);
+    
+    updateRequest();
+    console.log(todoRequest);
+    fetchTasks();
+  }, [currentPage]);
+
+  if (loading) {
+    return <h1>Loading tasks</h1>;
   }
 
   return (
@@ -246,7 +144,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {isModalOpen && <TaskModal onClose={closeModal} task={currentTask}/> }
+        {isModalOpen && <TaskModal onClose={closeModal} task={currentTask} />}
 
         <div className="relative overflow-x-auto rounded-lg">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -267,13 +165,21 @@ function Dashboard() {
             </thead>
             <tbody>
               {tasks.map((task, index) => (
-                <Task key={index} task={task} onEdit={() => openEditTaskModal(task)}/>
+                <Task
+                  key={index}
+                  task={task}
+                  onEdit={() => openEditTaskModal(task)}
+                />
               ))}
             </tbody>
           </table>
         </div>
 
-        <Pagination currentPage={1} totalTasks={tasks.length} />
+        <Pagination
+          currentPage={currentPage}
+          totalTasks={totalTasks}
+          onPageChanged={onPageChanged}
+        />
       </div>
       <div className="w-1/4 mt-10 m-5">
         <div className="rounded-xl bg-slate-200 items-center justify-center max-h-min p-10">

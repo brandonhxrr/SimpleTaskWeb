@@ -8,7 +8,7 @@ interface NewTaskProps {
 }
 
 const TaskModal: React.FC<NewTaskProps> = ({ task, onClose }) => {
-  const [taskName, setTaskName] = useState(task? task.name : "");
+  const [taskName, setTaskName] = useState(task? task.text : "");
   const [dueDate, setDueDate] = useState(task ? task.dueDate : "");
   const [priority, setPriority] = useState(task ? task.priority : "Medium");
   const [done, setIsDone] = useState(task ? task.done : false );
