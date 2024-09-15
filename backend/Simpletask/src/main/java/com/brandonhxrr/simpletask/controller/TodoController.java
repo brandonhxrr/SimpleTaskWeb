@@ -14,13 +14,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 public class TodoController {
 
     @Autowired
     private TodoRepository todoRepository;
 
     @GetMapping("/todos/")
-    public ResponseEntity<List<Todo>> getAllTasks(@RequestBody TodoRequest tasksRequest) {
+    public ResponseEntity<Map<String, Object>> getAllTasks(TodoRequest tasksRequest) {
         try {
             List<Todo> tasksList = new ArrayList<>(todoRepository.findAll());
 
@@ -66,8 +67,14 @@ public class TodoController {
             if ((10 * tasksRequest.getPage()) - tasksList.size() < 10) {
                 int startIndex = (tasksRequest.getPage() - 1) * 10;
                 int endIndex = startIndex + 10;
+                int totalTasks = tasksList.size();
                 List<Todo> paginatedTaskList = tasksList.subList(startIndex, Math.min(endIndex, tasksList.size()));
-                return new ResponseEntity<>(paginatedTaskList, HttpStatus.OK);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("totalTasks", totalTasks);
+                response.put("tasks", paginatedTaskList);
+
+                return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
