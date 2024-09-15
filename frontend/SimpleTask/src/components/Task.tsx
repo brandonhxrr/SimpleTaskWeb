@@ -9,7 +9,7 @@ import {
 import { Priority } from "./PriorityComponent";
 import { TaskProps } from "./TaskProps";
 
-const Task: React.FC<{ task: TaskProps }> = ({ task }) => {
+const Task: React.FC<{ task: TaskProps, onEdit: () => void }> = ({ task, onEdit }) => {
 
   return (
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
@@ -46,24 +46,24 @@ const Task: React.FC<{ task: TaskProps }> = ({ task }) => {
             className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
             <div className="">
-              <MenuItem>
-                <a
-                  href=""
-                  className="font-medium text-gray-900 flex px-4 py-2 text-sm hover:bg-green-600 hover:text-white items-center rounded-md"
+              <MenuItem
+              >
+                <button
+                  className="font-medium text-gray-900 flex px-4 py-2 text-sm hover:bg-green-600 hover:text-white items-center rounded-md w-full"
+                  onClick={onEdit}
                 >
                   <PencilIcon className="w-5 h-5 pr-2" />
                   <p>Edit</p>
-                </a>
+                </button>
               </MenuItem>
 
               <MenuItem>
-                <a
-                  href=""
-                  className="font-medium text-gray-900 flex px-4 py-2 text-sm hover:bg-red-600 hover:text-white items-center rounded-md"
+                <button
+                  className="font-medium text-gray-900 flex px-4 py-2 text-sm hover:bg-red-600 hover:text-white items-center rounded-md w-full"
                 >
                   <TrashIcon className="w-5 h-5 pr-2" />
                   <p>Delete</p>
-                </a>
+                </button>
               </MenuItem>
             </div>
           </MenuItems>

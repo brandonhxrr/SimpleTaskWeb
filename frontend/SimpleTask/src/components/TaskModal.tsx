@@ -1,14 +1,17 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { TaskProps } from "./TaskProps";
 
 interface NewTaskProps {
+  task: TaskProps | null;
   onClose: () => void;
 }
 
-const NewTaskModal: React.FC<NewTaskProps> = ({ onClose }) => {
-  const [taskName, setTaskName] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState("Medium");
+const TaskModal: React.FC<NewTaskProps> = ({ task, onClose }) => {
+  const [taskName, setTaskName] = useState(task? task.name : "");
+  const [dueDate, setDueDate] = useState(task ? task.dueDate : "");
+  const [priority, setPriority] = useState(task ? task.priority : "Medium");
+  const [done, setIsDone] = useState(task ? task.done : false );
 
   const handleBackgroundClick = (e: any) => {
     if (e.target.id === "modal-background") {
@@ -98,6 +101,22 @@ const NewTaskModal: React.FC<NewTaskProps> = ({ onClose }) => {
               </select>
             </div>
 
+            <div className="mb-4 flex flex-row justify-between">
+              <label
+                htmlFor="isDone"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Done
+              </label>
+              <input
+                type="checkbox"
+                id="isDone"
+                checked={done}
+                onChange={(e) => setIsDone(e.target.checked)}
+                className="w-4 h-4"
+              />
+            </div>
+
             <button
               type="submit"
               className="w-full px-5 py-2.5 bg-blue-700 text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700"
@@ -111,4 +130,4 @@ const NewTaskModal: React.FC<NewTaskProps> = ({ onClose }) => {
   );
 };
 
-export { NewTaskModal };
+export { TaskModal };

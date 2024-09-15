@@ -9,7 +9,7 @@ import { TaskProps } from "./TaskProps";
 import { Pagination } from "./Pagination";
 import { Filter } from "./Filter";
 import { useState } from "react";
-import { NewTaskModal } from "./NewTaskModal";
+import { TaskModal } from "./TaskModal";
 
 const priorityOptions = [
   { name: "None", href: "#", current: true },
@@ -36,7 +36,7 @@ const tasks: TaskProps[] = [
     id: 1,
     name: "Lavar ropa",
     done: false,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "HIGH",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -46,7 +46,7 @@ const tasks: TaskProps[] = [
     id: 2,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "MEDIUM",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -56,7 +56,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -66,7 +66,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -76,7 +76,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -86,7 +86,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -96,7 +96,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -106,7 +106,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -116,7 +116,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -126,7 +126,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -136,7 +136,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -146,7 +146,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -156,7 +156,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -166,7 +166,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -176,7 +176,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -186,7 +186,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -196,7 +196,7 @@ const tasks: TaskProps[] = [
     id: 3,
     name: "Lavar ropa",
     done: true,
-    dueDate: "27/11/2024",
+    dueDate: "2024-11-27T06:00",
     priority: "LOW",
     doneDate: "",
     creationDate: "11/09/2024",
@@ -206,12 +206,20 @@ const tasks: TaskProps[] = [
 
 function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentTask, setCurrentTask] = useState<TaskProps | null>(null);
 
-  const openModal = () => {
+  const openEditTaskModal = (task: TaskProps) => {
+    setIsModalOpen(true);
+    setCurrentTask(task);
+  }
+
+  const openAddTaskModal = () => {
+    setCurrentTask(null);
     setIsModalOpen(true);
   }
 
   const closeModal = () => {
+    console.log("MODALLL")
     setIsModalOpen(false);
   }
 
@@ -230,7 +238,7 @@ function Dashboard() {
             <button
               type="button"
               className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 justify-center font-medium rounded-lg text-sm ml-5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-              onClick={openModal}
+              onClick={openAddTaskModal}
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Add task
@@ -238,7 +246,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {isModalOpen && <NewTaskModal onClose={closeModal} /> }
+        {isModalOpen && <TaskModal onClose={closeModal} task={currentTask}/> }
 
         <div className="relative overflow-x-auto rounded-lg">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -259,7 +267,7 @@ function Dashboard() {
             </thead>
             <tbody>
               {tasks.map((task, index) => (
-                <Task key={index} task={task} />
+                <Task key={index} task={task} onEdit={() => openEditTaskModal(task)}/>
               ))}
             </tbody>
           </table>
