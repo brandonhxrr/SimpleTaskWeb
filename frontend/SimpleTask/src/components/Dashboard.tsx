@@ -237,6 +237,9 @@ function Dashboard() {
                     sorteable={header.sorteable ? header.sorteable : false}
                   />
                 ))}
+                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
