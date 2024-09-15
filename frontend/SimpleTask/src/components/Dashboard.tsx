@@ -8,6 +8,8 @@ import { TableHeader } from "./TableHeader";
 import { TaskProps } from "./TaskProps";
 import { Pagination } from "./Pagination";
 import { Filter } from "./Filter";
+import { useState } from "react";
+import { NewTaskModal } from "./NewTaskModal";
 
 const priorityOptions = [
   { name: "None", href: "#", current: true },
@@ -203,6 +205,16 @@ const tasks: TaskProps[] = [
 ];
 
 function Dashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
   return (
     <div className="flex">
       <div className="w-full h-full flex flex-col text-left bg-slate-200 rounded-xl p-20 mt-10">
@@ -218,12 +230,15 @@ function Dashboard() {
             <button
               type="button"
               className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 justify-center font-medium rounded-lg text-sm ml-5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              onClick={openModal}
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Add task
             </button>
           </div>
         </div>
+
+        {isModalOpen && <NewTaskModal onClose={closeModal} /> }
 
         <div className="relative overflow-x-auto rounded-lg">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
