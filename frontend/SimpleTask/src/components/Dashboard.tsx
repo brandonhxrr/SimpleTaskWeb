@@ -12,6 +12,10 @@ import { useEffect, useState } from "react";
 import { TaskModal } from "./TaskModal";
 import { TodoRequest } from "./TodoRequest";
 
+interface DashboardProps {
+  taskName: string;
+}
+
 const priorityOptions = [
   { name: "None", href: "#", current: true },
   { name: "High", href: "#", current: false },
@@ -32,14 +36,14 @@ const headers = [
   { Icon: CalendarDaysIcon, title: "Due date", sorteable: true },
 ];
 
-function Dashboard() {
+const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
   const [tasks, setTasks] = useState<TaskProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<TaskProps | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
-  const [filterByTaskName, setFilterByTaskName] = useState("");
+  const [filterByTaskName, setFilterByTaskName] = useState(taskName);
   const [filterByTaskPriority, setFilterByTaskPriority] = useState("");
   const [filterByTaskStatus, setFilterByTaskStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -60,6 +64,10 @@ function Dashboard() {
       sortBy: sortBy,
     });
   };
+
+  useEffect(() => {
+    setFilterByTaskName(taskName);
+  }, [taskName]);
 
   const openEditTaskModal = (task: TaskProps) => {
     setIsModalOpen(true);
@@ -88,6 +96,12 @@ function Dashboard() {
     url.search = searchParams.toString();
     try {
       const response = await fetch(url.toString(), { method: "GET" });
+      if(response.status === 204) {
+        setTasks([]);
+        setTotalTasks(0);
+        setLoading(false);
+        return;
+      }
       console.log(url);
       console.log(response);
       const data = await response.json();
@@ -138,7 +152,7 @@ function Dashboard() {
     updateRequest();
     console.log(todoRequest);
     fetchTasks();
-  }, [currentPage, filterByTaskStatus, filterByTaskPriority]);
+  }, [currentPage, filterByTaskStatus, filterByTaskPriority, filterByTaskName]);
 
   if (loading) {
     return <h1>Loading tasks</h1>;
