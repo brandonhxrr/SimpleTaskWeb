@@ -3,25 +3,31 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 interface Option {
   name: string;
-  href: string;
   current: boolean;
 }
 
 interface FilterOptions {
   options: Option[];
   title: string;
+  onFilterChanged: (option: string) => void;
 }
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-const Filter: React.FC<FilterOptions> = ({ options, title }) => {
+const Filter: React.FC<FilterOptions> = ({
+  options,
+  title,
+  onFilterChanged,
+}) => {
   return (
     <Menu as="div" className="relative inline-block text-left pl-5">
       <div>
         <MenuButton className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-          {title}
+          {options.find((option) => option.current)?.name !== "None"
+            ? options.find((option) => option.current)?.name
+            : title}
           <ChevronDownIcon
             aria-hidden="true"
             className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -36,17 +42,17 @@ const Filter: React.FC<FilterOptions> = ({ options, title }) => {
         <div className="py-1">
           {options.map((option) => (
             <MenuItem key={option.name}>
-              <a
-                href={option.href}
+              <button
                 className={classNames(
                   option.current
                     ? "font-medium text-gray-900"
                     : "text-gray-500",
-                  "block px-4 py-2 text-sm data-[focus]:bg-gray-100"
+                  "block px-4 py-2 text-sm data-[focus]:bg-gray-100 w-full text-left"
                 )}
+                onClick={() => onFilterChanged(option.name)}
               >
                 {option.name}
-              </a>
+              </button>
             </MenuItem>
           ))}
         </div>

@@ -22,7 +22,7 @@ const priorityOptions = [
 const doneOptions = [
   { name: "None", href: "#", current: true },
   { name: "Done", href: "#", current: false },
-  { name: "Not done", href: "#", current: false },
+  { name: "Undone", href: "#", current: false },
 ];
 
 const headers = [
@@ -105,6 +105,29 @@ function Dashboard() {
     setCurrentPage(page);
   };
 
+  const onFilterByTaskStatusChanged = (status: string) => {
+
+    setFilterByTaskStatus(status);
+    doneOptions.forEach(option => {
+      if(option.name == status) {
+        option.current = true;
+      }else{
+        option.current = false;
+      }
+    })
+  };
+
+  const onFilterByTaskPriorityChanged = (priority: string) => {
+    setFilterByTaskPriority(priority);
+    priorityOptions.forEach(option => {
+      if(option.name == priority) {
+        option.current = true;
+      }else{
+        option.current = false;
+      }
+    })
+  };
+
   useEffect(() => {
     fetchTasks();
   }, [todoRequest]);
@@ -115,7 +138,7 @@ function Dashboard() {
     updateRequest();
     console.log(todoRequest);
     fetchTasks();
-  }, [currentPage]);
+  }, [currentPage, filterByTaskStatus, filterByTaskPriority]);
 
   if (loading) {
     return <h1>Loading tasks</h1>;
@@ -130,8 +153,8 @@ function Dashboard() {
           </h1>
 
           <div className="flex items-center">
-            <Filter options={doneOptions} title="Done status" />
-            <Filter options={priorityOptions} title="Priority" />
+            <Filter options={doneOptions} title="Done status" onFilterChanged={onFilterByTaskStatusChanged}/>
+            <Filter options={priorityOptions} title="Priority" onFilterChanged={onFilterByTaskPriorityChanged} />
 
             <button
               type="button"
