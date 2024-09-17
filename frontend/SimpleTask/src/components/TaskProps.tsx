@@ -1,12 +1,12 @@
 interface TaskProps {
-    id: number;
+    id?: number;
     text: string;
     done: boolean;
     dueDate: string;
-    doneDate: string;
+    doneDate?: string;
     priority: string;
-    creationDate: string;
-    lastUpdatedDate: string;
+    creationDate?: string;
+    lastUpdatedDate?: string;
   }
 
   export type { TaskProps };

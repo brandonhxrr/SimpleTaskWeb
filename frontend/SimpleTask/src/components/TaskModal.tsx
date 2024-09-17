@@ -1,23 +1,48 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TaskProps } from "./TaskProps";
 
 interface NewTaskProps {
   task: TaskProps | null;
+  getAllTasks: () => void;
   onClose: () => void;
 }
 
-const TaskModal: React.FC<NewTaskProps> = ({ task, onClose }) => {
-  const [taskName, setTaskName] = useState(task? task.text : "");
+const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
+  const [taskName, setTaskName] = useState(task ? task.text : "");
   const [dueDate, setDueDate] = useState(task ? task.dueDate : "");
   const [priority, setPriority] = useState(task ? task.priority : "Medium");
-  const [done, setIsDone] = useState(task ? task.done : false );
+  const [done, setIsDone] = useState(task ? task.done : false);
 
   const handleBackgroundClick = (e: any) => {
     if (e.target.id === "modal-background") {
       onClose();
     }
   };
+
+  const addTask = async (task: TaskProps) => {
+    try {
+      const response = await fetch("http://localhost:9090/todos/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error while adding task");
+      }
+
+      const data = await response.json();
+      console.log("Task added", data);
+      getAllTasks();
+    } catch (error) {
+      console.error("Error while adding new task");
+    }
+  };
+
+  useEffect(() => {});
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -49,14 +74,14 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose }) => {
           <form className="p-4" onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
-                htmlFor="taskName"
+                htmlFor="text"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Task Name
               </label>
               <input
                 type="text"
-                id="taskName"
+                id="text"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
                 className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg dark:bg-gray-600 dark:border-gray-500 dark:text-white"
@@ -119,6 +144,14 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose }) => {
 
             <button
               type="submit"
+              onClick={() =>
+                addTask({
+                  text: taskName,
+                  dueDate: dueDate,
+                  done: done,
+                  priority: priority,
+                })
+              }
               className="w-full px-5 py-2.5 bg-blue-700 text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               Add Task
