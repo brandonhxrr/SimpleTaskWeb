@@ -1,5 +1,6 @@
 package com.brandonhxrr.simpletask.controller;
 
+import com.brandonhxrr.simpletask.model.Priority;
 import com.brandonhxrr.simpletask.model.TaskPriorityComparator;
 import com.brandonhxrr.simpletask.model.Todo;
 import com.brandonhxrr.simpletask.model.TodoRequest;
@@ -40,8 +41,8 @@ public class TodoController {
                 }
 
                 switch (tasksRequest.getTaskStatus()) {
-                    case "done" -> tasksList = tasksList.stream().filter(Todo::getDone).collect(Collectors.toList());
-                    case "notDone" ->
+                    case "Done" -> tasksList = tasksList.stream().filter(Todo::getDone).collect(Collectors.toList());
+                    case "Undone" ->
                             tasksList = tasksList.stream().filter(task -> !task.getDone()).collect(Collectors.toList());
                 }
 
@@ -54,7 +55,7 @@ public class TodoController {
                     ).collect(Collectors.toList());
                 }
 
-                if(tasksRequest.getTaskPriority() != null) {
+                if(tasksRequest.getTaskPriority() != null && tasksRequest.getTaskPriority() != Priority.None) {
                     tasksList = tasksList.stream().filter(
                             task ->
                                     tasksRequest.getTaskPriority().equals(
