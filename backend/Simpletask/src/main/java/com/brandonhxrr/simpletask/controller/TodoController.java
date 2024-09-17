@@ -1,9 +1,6 @@
 package com.brandonhxrr.simpletask.controller;
 
-import com.brandonhxrr.simpletask.model.Priority;
-import com.brandonhxrr.simpletask.model.TaskPriorityComparator;
-import com.brandonhxrr.simpletask.model.Todo;
-import com.brandonhxrr.simpletask.model.TodoRequest;
+import com.brandonhxrr.simpletask.model.*;
 import com.brandonhxrr.simpletask.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.brandonhxrr.simpletask.model.TaskTime.formatDuration;
 
 @RestController
 public class TodoController {
@@ -49,12 +48,12 @@ public class TodoController {
                     tasksList = tasksList.stream().filter(
                             task ->
                                     task.getText().toLowerCase().contains(
-                                        tasksRequest.getTaskName().toLowerCase()
-                            )
+                                            tasksRequest.getTaskName().toLowerCase()
+                                    )
                     ).collect(Collectors.toList());
                 }
 
-                if(tasksRequest.getTaskPriority() != null && tasksRequest.getTaskPriority() != Priority.None) {
+                if (tasksRequest.getTaskPriority() != null && tasksRequest.getTaskPriority() != Priority.None) {
                     tasksList = tasksList.stream().filter(
                             task ->
                                     tasksRequest.getTaskPriority().equals(
@@ -70,7 +69,37 @@ public class TodoController {
                 int totalTasks = tasksList.size();
                 List<Todo> paginatedTaskList = tasksList.subList(startIndex, Math.min(endIndex, tasksList.size()));
 
+                long totalMinutes = TaskTime.calculateTotalMinutes(tasksList);
+
+                List<Todo> finalTasksList = tasksList;
+                Map<Priority, Long> totalMinutesByPriority = Arrays.stream(Priority.values())
+                        .collect(Collectors.toMap(
+                                priority -> priority,
+                                priority -> TaskTime.calculateTotalMinutes(
+                                        finalTasksList.stream().filter(task -> priority.equals(task.getPriority())).collect(Collectors.toList())
+                                )
+                        ));
+
+                Map<Priority, Long> taskCountByPriority = Arrays.stream(Priority.values())
+                        .collect(Collectors.toMap(
+                                priority -> priority,
+                                priority -> finalTasksList.stream().filter(task -> priority.equals(task.getPriority())).count()
+                        ));
+
                 Map<String, Object> response = new HashMap<>();
+                response.put("totalDuration", formatDuration(totalTasks > 0 ? totalMinutes / totalTasks : 0));
+                response.put("totalMinutes", totalMinutes);
+                response.put("priorityDurations", Map.of(
+                        "High", formatDuration(taskCountByPriority.getOrDefault(Priority.High, 0L) > 0
+                                ? totalMinutesByPriority.getOrDefault(Priority.High, 0L) / taskCountByPriority.getOrDefault(Priority.High, 1L)
+                                : 0L),
+                        "Medium", formatDuration(taskCountByPriority.getOrDefault(Priority.Medium, 0L) > 0
+                                ? totalMinutesByPriority.getOrDefault(Priority.Medium, 0L) / taskCountByPriority.getOrDefault(Priority.Medium, 1L)
+                                : 0L),
+                        "Low", formatDuration(taskCountByPriority.getOrDefault(Priority.Low, 0L) > 0
+                                ? totalMinutesByPriority.getOrDefault(Priority.Low, 0L) / taskCountByPriority.getOrDefault(Priority.Low, 1L)
+                                : 0L)
+                ));
                 response.put("totalTasks", totalTasks);
                 response.put("tasks", paginatedTaskList);
 
@@ -100,7 +129,7 @@ public class TodoController {
     @PostMapping("/todos/")
     public ResponseEntity<Todo> addTask(@RequestBody Todo task) {
 
-        if(task.getText().isEmpty() || task.getPriority() == null){
+        if (task.getText().isEmpty() || task.getPriority() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -123,9 +152,9 @@ public class TodoController {
             LocalDateTime now = LocalDateTime.now();
 
             if (updatedTask.getDone() != newTaskData.getDone()) {
-                if(newTaskData.getDone()){
+                if (newTaskData.getDone()) {
                     updatedTask.setDoneDate(now);
-                }else{
+                } else {
                     updatedTask.setDoneDate(null);
                 }
             }
@@ -136,7 +165,7 @@ public class TodoController {
             updatedTask.setDueDate(newTaskData.getDueDate());
             updatedTask.setLastUpdateDate(now);
 
-            if(updatedTask.getText().isEmpty() || updatedTask.getPriority() == null){
+            if (updatedTask.getText().isEmpty() || updatedTask.getPriority() == null) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
@@ -158,7 +187,7 @@ public class TodoController {
 
             LocalDateTime now = LocalDateTime.now();
 
-            if(!updatedTask.getDone()){
+            if (!updatedTask.getDone()) {
                 updatedTask.setDone(true);
                 updatedTask.setDoneDate(now);
                 updatedTask.setLastUpdateDate(now);
@@ -180,7 +209,7 @@ public class TodoController {
 
             LocalDateTime now = LocalDateTime.now();
 
-            if(updatedTask.getDone()){
+            if (updatedTask.getDone()) {
                 updatedTask.setDone(false);
                 updatedTask.setDoneDate(null);
                 updatedTask.setLastUpdateDate(now);
@@ -193,11 +222,11 @@ public class TodoController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("todos/{id}/delete/")
+    @DeleteMapping("/todos/{id}/delete/")
     public ResponseEntity<HttpStatus> deleteTask(@PathVariable Long id) {
         Optional<Todo> taskData = todoRepository.findById(id);
 
-        if(taskData.isPresent()) {
+        if (taskData.isPresent()) {
             todoRepository.deleteById(id);
 
             return new ResponseEntity<>(HttpStatus.OK);
