@@ -84,7 +84,7 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
     onClose();
   };
 
-  function clearDueDate () {
+  function clearDueDate() {
     setDueDate("");
   }
 
@@ -139,9 +139,11 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
                   onChange={(e) => setDueDate(e.target.value)}
                   className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                 />
-                <button className="ml-2 hover:text-blue-700"
-                onClick={clearDueDate}
-                type="button">
+                <button
+                  className="ml-2 hover:text-blue-700"
+                  onClick={clearDueDate}
+                  type="button"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"

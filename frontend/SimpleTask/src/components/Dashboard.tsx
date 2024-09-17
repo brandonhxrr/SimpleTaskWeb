@@ -43,6 +43,11 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
   const [currentTask, setCurrentTask] = useState<TaskProps | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
+  const [totalDuration, setTotalDuration] = useState("");
+  const [totalMinutes, setTotalMinutes] = useState(0);
+  const [highDuration, setHighDuration] = useState("");
+  const [mediumDuration, setMediumDuration] = useState("");
+  const [lowDuration, setLowDuration] = useState("");
   const [filterByTaskName, setFilterByTaskName] = useState(taskName);
   const [filterByTaskPriority, setFilterByTaskPriority] = useState("");
   const [filterByTaskStatus, setFilterByTaskStatus] = useState("");
@@ -113,6 +118,11 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
       console.log(data);
       setTasks(data.tasks);
       setTotalTasks(data.totalTasks);
+      setTotalDuration(data.totalDuration);
+      setTotalMinutes(data.totalMinutes);
+      setHighDuration(data.priorityDurations["High"]);
+      setMediumDuration(data.priorityDurations["Medium"]);
+      setLowDuration(data.priorityDurations["Low"]);
       setLoading(false);
     } catch (error) {
       console.log("Error while loading tasks", error);
@@ -248,7 +258,7 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
         
 
         <div className="relative overflow-x-auto rounded-lg">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-24">
             <thead className="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 {headers.map((header, index) => (
@@ -291,33 +301,33 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
       </div>
       <div className="w-1/4 mt-10 m-5">
         <div className="rounded-xl bg-slate-200 items-center justify-center max-h-min p-10">
-          <p className="text-3xl font-bold tracking-tight text-gray-900">
+          <p className="text-2xl font-bold tracking-tight text-gray-900">
             Metrics
           </p>
           <p className="text-6xl font-bold tracking-tight mt-4 text-gray-900">
-            22:15
+            {totalDuration}
           </p>
-          <p className="mt-3">minutes to finish tasks</p>
+          <p className="mt-3">on average to finish tasks</p>
         </div>
 
         <div className="rounded-xl bg-slate-200 items-center justify-center max-h-min p-10 mt-5">
           <p className="text-md font-bold tracking-tight text-gray-900">
-            Estimated time by priority
+            Average time to finish tasks by priority
           </p>
           <div className="text-left mt-5">
             <p className="flex items-center">
               <span className="text-red-600 text-3xl mr-2">•</span>
-              <p>High: 30 minutes</p>
+              <p>High: {highDuration}</p>
             </p>
 
             <p className="flex items-center">
               <span className="text-amber-500 text-3xl mr-2">•</span>
-              <p>Medium: 20 minutes</p>
+              <p>Medium: {mediumDuration}</p>
             </p>
 
             <p className="flex items-center">
               <span className="text-green-600 text-3xl mr-2">•</span>
-              <p>Low: 10 minutes</p>
+              <p>Low: {lowDuration}</p>
             </p>
           </div>
         </div>

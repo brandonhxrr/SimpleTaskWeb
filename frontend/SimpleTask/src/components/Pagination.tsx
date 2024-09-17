@@ -32,7 +32,7 @@ const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks, onPageChange
   return (
     <div className="flex justify-center">
       <div>
-        <div className="text-center mt-10">
+        <div className="text-center">
           <span className="text-sm text-gray-700 dark:text-gray-400">
             Showing{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
