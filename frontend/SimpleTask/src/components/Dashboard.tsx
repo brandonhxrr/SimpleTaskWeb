@@ -36,7 +36,7 @@ const headers = [
   { Icon: CalendarDaysIcon, title: "Due date", sorteable: true },
 ];
 
-const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
+const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
   const [tasks, setTasks] = useState<TaskProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,6 +47,11 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
   const [filterByTaskPriority, setFilterByTaskPriority] = useState("");
   const [filterByTaskStatus, setFilterByTaskStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [toggleSortByPriority, setToggleSortByPriority] = useState(0);
+  const [toggleSortByDueDate, setToggleSortByDueDate] = useState(0);
+  const [sortByPriority, setSortByPriority] = useState("");
+  const [sortByDueDate, setSortByDueDate] = useState("");
+
   const [todoRequest, setRequest] = useState<TodoRequest>({
     page: 1,
     taskName: "",
@@ -96,7 +101,7 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
     url.search = searchParams.toString();
     try {
       const response = await fetch(url.toString(), { method: "GET" });
-      if(response.status === 204) {
+      if (response.status === 204) {
         setTasks([]);
         setTotalTasks(0);
         setLoading(false);
@@ -120,39 +125,88 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
   };
 
   const onFilterByTaskStatusChanged = (status: string) => {
-
     setFilterByTaskStatus(status);
-    doneOptions.forEach(option => {
-      if(option.name == status) {
+    doneOptions.forEach((option) => {
+      if (option.name == status) {
         option.current = true;
-      }else{
+      } else {
         option.current = false;
       }
-    })
+    });
   };
 
   const onFilterByTaskPriorityChanged = (priority: string) => {
     setFilterByTaskPriority(priority);
-    priorityOptions.forEach(option => {
-      if(option.name == priority) {
+    priorityOptions.forEach((option) => {
+      if (option.name == priority) {
         option.current = true;
-      }else{
+      } else {
         option.current = false;
       }
-    })
+    });
   };
+
+  const onSortBy = (sortBy: string) => {
+    if (sortBy === "Priority") {
+      setToggleSortByPriority(toggleSortByPriority + 1);
+    } else if (sortBy == "Due date") {
+      setToggleSortByDueDate(toggleSortByDueDate + 1);
+    }
+  };
+
+  useEffect(() => {
+    switch (toggleSortByPriority % 3) {
+      case 1:
+        setSortByPriority("priority");
+        break;
+      case 2:
+        setSortByPriority("priorityAsc");
+        break;
+      default:
+        setSortByPriority("");
+        break;
+    }
+
+    switch (toggleSortByDueDate % 3) {
+      case 1:
+        setSortByDueDate("dueDate");
+        break;
+      case 2:
+        setSortByDueDate("dueDateAsc");
+        break;
+      default:
+        setSortByDueDate("");
+        break;
+    }
+  }, [toggleSortByPriority, toggleSortByDueDate]);
+
+  useEffect(() => {
+    let sortBySentence =
+      sortByPriority.length > 0
+        ? sortByDueDate.length > 0
+          ? sortByPriority + "&" + sortByDueDate
+          : sortByPriority
+        : sortByDueDate.length > 0
+        ? sortByDueDate
+        : "";
+
+    setSortBy(sortBySentence);
+  }, [sortByPriority, sortByDueDate]);
 
   useEffect(() => {
     fetchTasks();
   }, [todoRequest]);
 
   useEffect(() => {
-    console.log(currentPage);
-    
     updateRequest();
-    console.log(todoRequest);
     fetchTasks();
-  }, [currentPage, filterByTaskStatus, filterByTaskPriority, filterByTaskName]);
+  }, [
+    currentPage,
+    filterByTaskStatus,
+    filterByTaskPriority,
+    filterByTaskName,
+    sortBy,
+  ]);
 
   if (loading) {
     return <h1>Loading tasks</h1>;
@@ -167,8 +221,16 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
           </h1>
 
           <div className="flex items-center">
-            <Filter options={doneOptions} title="Done status" onFilterChanged={onFilterByTaskStatusChanged}/>
-            <Filter options={priorityOptions} title="Priority" onFilterChanged={onFilterByTaskPriorityChanged} />
+            <Filter
+              options={doneOptions}
+              title="Done status"
+              onFilterChanged={onFilterByTaskStatusChanged}
+            />
+            <Filter
+              options={priorityOptions}
+              title="Priority"
+              onFilterChanged={onFilterByTaskPriorityChanged}
+            />
 
             <button
               type="button"
@@ -193,6 +255,12 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
                     title={header.title}
                     Icon={header.Icon}
                     sorteable={header.sorteable ? header.sorteable : false}
+                    sortByOption={
+                      header.title === "Priority"
+                        ? toggleSortByPriority
+                        : toggleSortByDueDate
+                    }
+                    onSortColumn={onSortBy}
                   />
                 ))}
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -253,6 +321,6 @@ const Dashboard:React.FC<DashboardProps> = ({taskName}) => {
       </div>
     </div>
   );
-}
+};
 
 export { Dashboard };

@@ -1,6 +1,6 @@
 interface TaskProps {
     id: number;
-    name: string;
+    text: string;
     done: boolean;
     dueDate: string;
     doneDate: string;
