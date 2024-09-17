@@ -58,6 +58,11 @@ const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => v
   };
 
   function parseDate(oldDate: string) {
+
+    if(oldDate === null){
+      return "-";
+    }
+
     const date = new Date(oldDate);
   
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
