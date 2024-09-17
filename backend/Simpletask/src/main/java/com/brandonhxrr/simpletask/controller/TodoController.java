@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
 public class TodoController {
 
     @Autowired
