@@ -1,5 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TaskProps } from "./TaskProps";
 
 interface NewTaskProps {
@@ -42,15 +42,45 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
     }
   };
 
-  useEffect(() => {});
+  const updateTask = async (updatedTask: TaskProps) => {
+    try {
+      const response = await fetch(`http://localhost:9090/todos/${task!.id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedTask),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error while updating task");
+      }
+
+      const data = await response.json();
+      console.log("Task updated", data);
+      getAllTasks();
+    } catch (error) {
+      console.error("Error while updating old task");
+    }
+  };
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log({
-      taskName,
-      dueDate,
-      priority,
-    });
+
+    const taskToSubmit: TaskProps = {
+      id: task ? task.id : undefined,
+      text: taskName,
+      dueDate: dueDate,
+      done: done,
+      priority: priority,
+    };
+
+    if (task) {
+      updateTask(taskToSubmit);
+    } else {
+      addTask(taskToSubmit);
+    }
+
     onClose();
   };
 
@@ -65,7 +95,7 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Add New Task
+              {task ? "Update task" : "Add new task"}
             </h3>
 
             <XMarkIcon className="w-10 h-4" onClick={onClose} />
@@ -144,17 +174,9 @@ const TaskModal: React.FC<NewTaskProps> = ({ task, onClose, getAllTasks }) => {
 
             <button
               type="submit"
-              onClick={() =>
-                addTask({
-                  text: taskName,
-                  dueDate: dueDate,
-                  done: done,
-                  priority: priority,
-                })
-              }
               className="w-full px-5 py-2.5 bg-blue-700 text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700"
             >
-              Add Task
+              {task ? "Update task" : "Add task"}
             </button>
           </form>
         </div>
