@@ -7,7 +7,7 @@ const Pagination: React.FC<PageProps> = ({ currentPage, totalTasks, onPageChange
   const maxPages = 5;
   const totalPages = Math.ceil(totalTasks / 10);
 
-  const startIndex = currentPage * 10 - 9;
+  const startIndex = totalTasks === 0 ? 0 : currentPage * 10 - 9;
   const endIndex =
     currentPage * 10 < totalTasks ? currentPage * 10 : totalTasks;
 

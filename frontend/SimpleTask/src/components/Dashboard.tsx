@@ -44,7 +44,6 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
   const [totalDuration, setTotalDuration] = useState("");
-  const [totalMinutes, setTotalMinutes] = useState(0);
   const [highDuration, setHighDuration] = useState("");
   const [mediumDuration, setMediumDuration] = useState("");
   const [lowDuration, setLowDuration] = useState("");
@@ -119,7 +118,6 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
       setTasks(data.tasks);
       setTotalTasks(data.totalTasks);
       setTotalDuration(data.totalDuration);
-      setTotalMinutes(data.totalMinutes);
       setHighDuration(data.priorityDurations["High"]);
       setMediumDuration(data.priorityDurations["Medium"]);
       setLowDuration(data.priorityDurations["Low"]);
@@ -253,9 +251,13 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
           </div>
         </div>
 
-        {isModalOpen && <TaskModal onClose={closeModal} task={currentTask} getAllTasks={fetchTasks} />}
-
-        
+        {isModalOpen && (
+          <TaskModal
+            onClose={closeModal}
+            task={currentTask}
+            getAllTasks={fetchTasks}
+          />
+        )}
 
         <div className="relative overflow-x-auto rounded-lg">
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mb-24">
@@ -280,16 +282,26 @@ const Dashboard: React.FC<DashboardProps> = ({ taskName }) => {
                 </th>
               </tr>
             </thead>
-            <tbody>
-              {tasks.map((task, index) => (
-                <Task
-                  key={index}
-                  task={task}
-                  onEdit={() => openEditTaskModal(task)}
-                  getAllTasks={fetchTasks}
-                />
-              ))}
-            </tbody>
+            {totalTasks === 0 ? (
+              <tbody className=" p-24 w-full bg-white">
+                <tr className="text-center" aria-colspan={5}>
+                  <td colSpan={5} className="p-24">
+                    No tasks available
+                  </td>
+                </tr>
+              </tbody>
+            ) : (
+              <tbody>
+                {tasks.map((task, index) => (
+                  <Task
+                    key={index}
+                    task={task}
+                    onEdit={() => openEditTaskModal(task)}
+                    getAllTasks={fetchTasks}
+                  />
+                ))}
+              </tbody>
+            )}
           </table>
         </div>
 
