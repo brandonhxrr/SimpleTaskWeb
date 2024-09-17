@@ -16,6 +16,15 @@ public class TodoRepository {
     }
 
     public Todo save(Todo task) {
+        if(task.getId() != null) {
+            for (int i = 0; i < tasks.size(); i++) {
+                Todo currentTask = tasks.get(i);
+                if (currentTask.getId().equals(task.getId())) {
+                    tasks.set(i, task);
+                    return task;
+                }
+            }
+        }
         task.setId((long) tasks.size() + 1);
         tasks.add(task);
         return task;
