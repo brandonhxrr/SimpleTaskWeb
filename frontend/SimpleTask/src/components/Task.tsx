@@ -8,8 +8,11 @@ import {
 } from "@heroicons/react/20/solid";
 import { Priority } from "./PriorityComponent";
 import { TaskProps } from "./TaskProps";
+import { useState } from "react";
 
 const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => void}> = ({ task, onEdit, getAllTasks }) => {
+
+  const [done, setDone] = useState(task.done);
 
   const deleteTask = async (id: number) => {
     try {
@@ -29,17 +32,49 @@ const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => v
     }
   };
 
+  const onDoneUpdate = async () => {
+    try {
+      let url = "";
+      let method = "";
+      if(task.done) {
+        url = `http://localhost:9090/todos/${task!.id}/undone/`;
+        method = "PUT";
+      }else {
+        url = `http://localhost:9090/todos/${task!.id}/done/`;
+        method = "POST";
+      }
+
+      setDone(!task.done);
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error while updating task");
+      }
+      getAllTasks();
+    } catch (error) {
+      console.error("Error while updating old task");
+    }
+  };
+
+  console.log(done);
+
   return (
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
       <td
         scope="row"
         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
       >
-        <input type="checkbox" checked={task.done} />
+        <input type="checkbox" checked={task.done} onClick={onDoneUpdate} />
       </td>
       <th
         scope="row"
-        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+        className={"px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" + " " + (task.done ? "line-through" : "")}
       >
         {task.text}
       </th>
