@@ -8,11 +8,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { Priority } from "./PriorityComponent";
 import { TaskProps } from "./TaskProps";
-import { useState } from "react";
 
 const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => void}> = ({ task, onEdit, getAllTasks }) => {
-
-  const [done, setDone] = useState(task.done);
 
   const deleteTask = async (id: number) => {
     try {
@@ -44,8 +41,6 @@ const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => v
         method = "POST";
       }
 
-      setDone(!task.done);
-
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -62,7 +57,18 @@ const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => v
     }
   };
 
-  console.log(done);
+  function parseDate(oldDate: string) {
+    const date = new Date(oldDate);
+  
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    
+    return `${month}/${day}/${year} ${hours}:${minutes}`;
+  }
 
   return (
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
@@ -81,7 +87,7 @@ const Task: React.FC<{ task: TaskProps, onEdit: () => void, getAllTasks: () => v
       <td className="px-6 py-4">
         <Priority priority={task.priority} />
       </td>
-      <td className="px-6 py-4">{task.dueDate}</td>
+      <td className="px-6 py-4">{parseDate(task.dueDate)}</td>
       <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <Menu
           as="div"
